@@ -27,4 +27,4 @@ class graph {
 };
 
 istream &operator >> ( istream &is, edge &e );
-istream &operator << ( ostream &os, const edge &e );
+ostream &operator << ( ostream &os, const edge &e );

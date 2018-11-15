@@ -1,8 +1,8 @@
 /*
-File: graph.h
-Anthony Krivonos
-11/12/2018
-*/
+ * File: graph.h
+ * Anthony Krivonos
+ * 11/12/2018
+ */
 
 #include <iostream>
 #include <iomanip>
@@ -13,81 +13,130 @@ Anthony Krivonos
 
 using namespace std;
 
-graph::graph() {}
-
+/**
+ * Read Graph
+ * - O(n)
+ * - Reads vertices and edges from text file and adds to the graph.
+ * @param file_name The filename of the input text file.
+ */
 void graph::read_graph(string file_name) {
-      ofstream graph_file;
+
+      // Open the graph file
+      ifstream graph_file;
       graph_file.open(file_name);
 
-      // Store set of vertices from file into vertex_str.
-      string vertex_str;
-      getline(graph_file, vertex_str);
+      if (graph_file.is_open()) {
 
-      // Add vertices to graph, map degrees of each vertex to 0
-      for(char& c : vertex_str) {
-            vertices.push_back(c);
-            degrees[c] = 0;
+            // Store set of vertices from file into vertex_str
+            string vertex_str;
+            graph_file >> vertex_str;
+
+            // Add vertices to graph, map degrees of each vertex to 0
+            for (int i = 0; i < vertex_str.length(); i++) {
+                  char c = vertex_str[i];
+
+                  // Add the vertex if it isn't an empty space to the vector
+                  // Set the degree of that vertex to 0
+                  if (c != ' ') {
+                        vertices.push_back(c);
+                        degrees[c] = 0;
+                  }
+            }
+
+            // Add edges to map
+            string edge_str;
+            while (getline(graph_file, edge_str)) {
+                  // Read in the edge
+                  edge new_edge;
+                  graph_file >> new_edge;
+
+                  // Append edge to list of edges
+                  edges.push_back(new_edge);
+
+                  // Reset edge string
+                  edge_str = "";
+            }
+
+            // Close the file being read
+            graph_file.close();
       }
-
-      // Add edges to map
-      while (getline(graph_file, edge_str)) {
-
-
-
-            // Create an edge between these vertices
-            edge new_edge = new edge(vertex_from, vertex_to);
-
-            // Append edge to list of edges
-            edges.push_back(new_edge);
-
-            // Reset edge string
-            edge_str = "";
-      }
-
-      graph_file.close();
 }
 
-void map::print_graph() {
+/**
+ * Print Graph
+ * - O(n)
+ * - Prints the edges and vertices of the graph, consecutively, in order.
+ */
+void graph::print_graph() {
       // Output statement
       cout << "Original graph:" << endl;
 
       // Output edges
       cout << setw(11) << right << "edges:" << endl;
       for (int i = 0; i < edges.size(); i++) {
-            cout << setw(9) << left << "" << setw(10) << "(" << edges.at(i).v_from << "," << edges.at(i).v_to << ")" << endl;
+            // Output edge
+            cout << setw(9) << left << "" << edges.at(i) << endl;
       }
 
       // Output vertices
       cout << setw(11) << right << "vertices:" << endl;
       for (int i = 0; i < vertices.size(); i++) {
+            // Output vertex as "x"
             cout << setw(9) << left << "" << setw(10) << vertices.at(i) << endl;
       }
+
+      // Add a line space
+      cout << endl;
 }
 
+/**
+ * Compute Degrees
+ * - O(n)
+ * - Loops through edges and increments the degree of each vertex in the edge within the degree map.
+ */
 void graph::compute_degrees() {
       // Reset each degree in the map
+      map<char, int>::iterator it;
       for (it = degrees.begin(); it != degrees.end(); it++) {
+            // Set the degree of the vertex to 0
             degrees[it->first] = 0;
       }
 
       // Loop through edges and increment
       for (int i = 0; i < edges.size(); i++) {
-            degrees[edge.v_from] += 1;
-            degrees[edge.v_to] += 1;
+            edge e = edges.at(i);
+            // Increment the degree of both the from and to vectors
+            degrees[e.v_from] += 1;
+            degrees[e.v_to] += 1;
       }
 }
 
+/**
+ * Print Degrees
+ * - O(n)
+ * - Prints the degree of each vertex (number of times it appears in an edge) in order.
+ */
 void graph::print_degrees() {
       // Output statement
-      cout << "degrees of vertices in the graph:" << endl;
+      cout << "Degrees of vertices in the graph:" << endl;
 
       // Output degree pairs
+      map<char, int>::iterator it;
       for (it = degrees.begin(); it != degrees.end(); it++) {
-            cout << setw(9) << left << "" << setw(4) << it->first << setw(4) << it->second << endl;
+            cout << setw(7) << left << "" << setw(4) << it->first << setw(4) << it->second << endl;
       }
 }
 
-friend istream &operator >> (istream &is, edge &e) {
+/**
+ * Input Overload
+ * - O(1)
+ * - Converts a "(x,y)" format string into an edge from vertex "x" to vertex "y".
+ * - Updates the reference-passed edge e with the parsed to/from vertices.
+ * @param &is An input stream passed by reference.
+ * @param &e An edge passed by reference.
+ * @returns An input stream of the given edge e.
+ */
+istream &operator >> (istream &is, edge &e) {
 
       // Read the edge string
       string edge_str;
@@ -96,17 +145,25 @@ friend istream &operator >> (istream &is, edge &e) {
       // Get splitting indices
       unsigned index_vertex_from = edge_str.find("(") + 1;
       unsigned index_delimiter = edge_str.find(",");
-      unsigned index_vertex_to = delimiter + 1;
+      unsigned index_vertex_to = index_delimiter + 1;
       unsigned index_close_paren = edge_str.find(")");
 
       // Read vertices from and to
-      edge.v_from = edge_str.substr(index_vertex_from, index_delimiter - index_vertex_from)[0];
-      edge.v_to = edge_str.substr(index_vertex_to, index_close_paren - index_vertex_to)[0];
+      e.v_from = edge_str.substr(index_vertex_from, index_delimiter - index_vertex_from)[0];
+      e.v_to = edge_str.substr(index_vertex_to, index_close_paren - index_vertex_to)[0];
 
       return is;
 }
 
-friend ostream &operator << (ostream &os, const edge &e) {
-      os << "(" << edge.v_from << "," << edge.v_to << ")" << endl;
+/**
+ * Output Overload
+ * - O(1)
+ * @param &os An output stream passed by reference.
+ * @param &e An edge passed by reference.
+ * @returns An output stream of the given edge e in "(x,y)" format.
+ */
+ostream &operator << (ostream &os, const edge &e) {
+      // Format edge string as "(x, y)"
+      os << "(" << e.v_from << "," << e.v_to << ")";
       return os;
 }
