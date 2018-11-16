@@ -1,8 +1,8 @@
 /*
-File: test-graph.cpp
-Anthony Krivonos
-11/12/2018
-*/
+ * File: test-graph.cpp
+ * Anthony Krivonos
+ * 11/12/2018
+ */
 
 #include <iostream>
 #include <iomanip>

@@ -1,8 +1,8 @@
 /*
-File: graph.h
-Anthony Krivonos
-11/12/2018
-*/
+ * File: graph.h
+ * Anthony Krivonos
+ * 11/12/2018
+ */
 
 #include <vector>
 #pragma once

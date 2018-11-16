@@ -1,5 +1,5 @@
 /*
- * File: graph.h
+ * File: graph.cpp
  * Anthony Krivonos
  * 11/12/2018
  */
@@ -25,6 +25,7 @@ void graph::read_graph(string file_name) {
       ifstream graph_file;
       graph_file.open(file_name);
 
+      // Ensure the graph input file has been opened
       if (graph_file.is_open()) {
 
             // Store set of vertices from file into vertex_str
