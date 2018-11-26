@@ -30,7 +30,7 @@ void graph::read_graph(string file_name) {
 
             // Store set of vertices from file into vertex_str
             string vertex_str;
-            graph_file >> vertex_str;
+            getline(graph_file, vertex_str);
 
             // Add vertices to graph, map degrees of each vertex to 0
             for (int i = 0; i < vertex_str.length(); i++) {
